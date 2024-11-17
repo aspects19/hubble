@@ -43,7 +43,7 @@ app.use((req, res) => {
 });
 
 // Error-handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   console.error(err.stack); // Log the error for debugging
   res.status(500).render("error", {
     errorCode: 500,
