@@ -1,0 +1,14 @@
+body {
+    display: flex;
+}
+
+nav.sidebar {
+    width: 20vw;
+    > ul {
+        list-style-type: none;
+    }
+}
+
+main {
+    width: 80vw;
+}
