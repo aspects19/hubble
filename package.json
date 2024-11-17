@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "fuser -k 3001/tcp || true && nodemon index.js"
+    "start": "fuser -k 3000/tcp || true && nodemon index.js"
   },
   "dependencies": {
     "argon2": "^0.41.1",

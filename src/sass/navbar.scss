@@ -6,11 +6,16 @@ nav.sidebar {
     width: 30vw;
     > ul {
         list-style-type: none;
+        > li > a {
+            text-decoration: none;
+        }
     }
+    height: 100vh;
 }
 
 main {
     width: 70vw;
+    height: 100vh;
 }
 
 .active {
