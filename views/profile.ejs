@@ -7,9 +7,10 @@
     <%- include('partials/head', { title: `${username}'s Profile` }) %>
   </head>
   <body>
-    <div class="container mt-5">
-      <h1><%= displayName %></h1> <!-- Display the hardcoded display name -->
-      <h6><strong>@<%= username %></strong></h6> <!-- Display the username -->
-    </div>
+    <%- include('partials/navbar') %>
+    <main class="p-4">
+      <h1><%= displayName %></h1>
+      <h6><strong>@<%= username %></strong></h6>
+    </main>
   </body>
 </html>
