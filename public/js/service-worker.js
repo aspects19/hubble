@@ -1,47 +1,24 @@
-// Cache names
-const CACHE_NAME = 'my-cache-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/styles.css',
-  '/script.js',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+// Cache name and assets to store
+const staticDevCoffee = "hubble";
+const assets = [
+  "*"
 ];
 
-// Install event: cache all the necessary assets
-self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installed');
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('Service Worker: Caching assets');
-      return cache.addAll(urlsToCache);
+// Install event: Cache assets
+self.addEventListener("install", (installEvent) => {
+  installEvent.waitUntil(
+    caches.open(staticDevCoffee).then((cache) => {
+      console.log("Caching assets...");
+      return cache.addAll(assets);
     })
   );
 });
 
-// Activate event: delete old caches if needed
-self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activated');
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (!cacheWhitelist.includes(cacheName)) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-});
-
-// Fetch event: Serve cached assets or fetch from network
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request);
+// Fetch event: Serve cached assets if available
+self.addEventListener("fetch", (fetchEvent) => {
+  fetchEvent.respondWith(
+    caches.match(fetchEvent.request).then((res) => {
+      return res || fetch(fetchEvent.request);
     })
   );
 });
