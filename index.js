@@ -34,6 +34,23 @@ app.use("/settings", settingsRoute);
 app.use("/user", userRoute);
 app.use("/api", apiRoute);
 
+// Handle 404 errors
+app.use((req, res) => {
+  res.status(404).render("error", {
+    errorCode: 404,
+    errorMsg: "Page Not Found"
+  });
+});
+
+// Error-handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack); // Log the error for debugging
+  res.status(500).render("error", {
+    errorCode: 500,
+    errorMsg: "Something went wrong. Please try again later."
+  });
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`App running on http://localhost:${port}`);
