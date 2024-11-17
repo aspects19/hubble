@@ -44,9 +44,9 @@ Once your environment is set up, you can start running the application locally u
 4. **Explore the Code**:
 Familiarize yourself with the codebase. The main directories are:
 
-- `/src`: Contains the core application code.
-- `/docs`: Contains all documentation and guides.
-- `/tests`: Contains unit and integration tests.
+- `/src`: Contains sass code.
+- `/views`: Contains ejs code.
+- `/public`: Contains js code, manifest, and icons.
 
 ## Contributing
 We love contributions from everyone! Here's how you can help:
