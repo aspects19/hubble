@@ -14,8 +14,8 @@ app.use(cors());
 
 // Serve static files from the 'public' folder
 app.use(express.static('public'));
-app.use('/bootstrap', express.static('node_modules/bootstrap/dist'));
-app.use('/bootstrap-icons', express.static('node_modules/bootstrap-icons/'));
+app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules/bootstrap/dist')));
+app.use('/bootstrap-icons/font', express.static(path.join(__dirname, 'node_modules/bootstrap-icons/font')));
 
 // Set EJS as view engine
 app.set('view engine', 'ejs');
