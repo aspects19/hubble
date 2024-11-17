@@ -1,9 +1,0 @@
-name: Bug Report
-description: Create a report to help us improve
-labels: bug
-body:
-  - type: textarea
-    attributes:
-      label: Describe the bug
-      placeholder: Please describe the bug...
-      required: true
