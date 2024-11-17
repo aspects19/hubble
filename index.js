@@ -15,8 +15,6 @@ const settingsRoute = require("./routes/settings");
 const userRoute = require("./routes/user");
 const apiRoute = require("./routes/api");
 
-let smth;
-
 // Enable CORS
 app.use(cors());
 
