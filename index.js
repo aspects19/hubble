@@ -1,38 +1,40 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
 const app = express();
 
-require('dotenv').config();
+require("dotenv").config();
 
 const port = process.env.PORT || 3000;
 
 // Import routes
-const indexRoute = require('./routes/index');
-const searchRoute = require('./routes/search');
-const notificationsRoute = require('./routes/notifications');
-const settingsRoute = require('./routes/settings');
-const userRoute = require('./routes/user');
-const apiRoute = require('./routes/api');
+const indexRoute = require("./routes/index");
+const searchRoute = require("./routes/search");
+const notificationsRoute = require("./routes/notifications");
+const settingsRoute = require("./routes/settings");
+const userRoute = require("./routes/user");
+const apiRoute = require("./routes/api");
+
+let smth;
 
 // Enable CORS
 app.use(cors());
 
 // Serve static files from the 'public' folder
-app.use(express.static('public'));
-app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules/bootstrap/dist')));
-app.use('/bootstrap-icons/font', express.static(path.join(__dirname, 'node_modules/bootstrap-icons/font')));
+app.use(express.static("public"));
+app.use("/bootstrap", express.static(path.join(__dirname, "node_modules/bootstrap/dist")));
+app.use("/bootstrap-icons/font", express.static(path.join(__dirname, "node_modules/bootstrap-icons/font")));
 
 // Set EJS as view engine
-app.set('view engine', 'ejs');
+app.set("view engine", "ejs");
 
 // Use routes
-app.use('/', indexRoute);
-app.use('/search', searchRoute);
-app.use('/notifications', notificationsRoute);
-app.use('/settings', settingsRoute);
-app.use('/user', userRoute);
-app.use('/api', apiRoute);
+app.use("/", indexRoute);
+app.use("/search", searchRoute);
+app.use("/notifications", notificationsRoute);
+app.use("/settings", settingsRoute);
+app.use("/user", userRoute);
+app.use("/api", apiRoute);
 
 // Start the server
 app.listen(port, () => {
