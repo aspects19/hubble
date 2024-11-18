@@ -14,6 +14,7 @@ const notificationsRoute = require("./routes/notifications");
 const settingsRoute = require("./routes/settings");
 const userRoute = require("./routes/user");
 const apiRoute = require("./routes/api");
+const postRoute = require("./routes/post");
 
 // Enable CORS
 app.use(cors());
@@ -28,6 +29,7 @@ app.set("view engine", "ejs");
 
 // Use routes
 app.use("/", indexRoute);
+app.use("/post", postRoute);
 app.use("/search", searchRoute);
 app.use("/notifications", notificationsRoute);
 app.use("/settings", settingsRoute);

@@ -3,22 +3,55 @@ body {
 }
 
 nav.sidebar {
-    > ul {
-        list-style-type: none;
-        > li {
-            font-size: 1.5em;
-            margin-top: 0.5em;
-            > a {
-                text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; // Ensures top and bottom sections are spaced apart
+    width: 25vw;
+    height: 100vh;
+
+    > .top {
+        ul {
+            list-style-type: none;
+            > li {
+                font-size: 1.5em;
+                margin-top: 0.5em;
+                > a {
+                    text-decoration: none;
+                }
             }
         }
     }
-    width: 30vw;
-    height: 100vh;
+
+    > .bottom {
+        text-align: center;
+        margin-bottom: 1em;
+
+        .create-thread-btn {
+            background-color: #007bff; // Bootstrap primary color
+            color: white;
+            border: none;
+            padding: 0.8em 0.8em;
+            font-size: 1.2em;
+            border-radius: 0.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5em; // Space between icon and text
+            cursor: pointer;
+
+            &:hover {
+                background-color: #0056b3; // Darker shade on hover
+            }
+
+            i {
+                font-size: 1.5em;
+            }
+        }
+    }
 }
 
 main {
-    width: 70vw;
+    width: 75vw;
     height: 100vh;
 }
 

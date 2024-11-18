@@ -1,11 +1,18 @@
 <link rel="stylesheet" href="/css/navbar.css">
 
 <nav class="sidebar p-2">
-    <ul>
-        <li><a href="/" class="<%= activeId === 'home' ? 'active' : '' %>"><i class="bi bi-house"></i> Home</a></li>
-        <li><a href="/search" class="<%= activeId === 'search' ? 'active' : '' %>"><i class="bi bi-search"></i> Search</a></li>
-        <li><a href="/notifications" class="<%= activeId === 'notifications' ? 'active' : '' %>"><i class="bi bi-bell"></i> Notifications</a></li>
-        <li><a href="/user/me" class="<%= activeId === 'profile' ? 'active' : '' %>"><i class="bi bi-person-circle"></i> Profile</a></li>
-        <li><a href="/settings" class="<%= activeId === 'settings' ? 'active' : '' %>"><i class="bi bi-gear"></i> Settings</a></li>
-    </ul>
+    <div class="top">
+        <ul>
+            <li><a href="/" class="<%= activeId === 'home' ? 'active' : '' %>"><i class="bi bi-house"></i> Home</a></li>
+            <li><a href="/search" class="<%= activeId === 'search' ? 'active' : '' %>"><i class="bi bi-search"></i> Search</a></li>
+            <li><a href="/notifications" class="<%= activeId === 'notifications' ? 'active' : '' %>"><i class="bi bi-bell"></i> Notifications</a></li>
+            <li><a href="/user/me" class="<%= activeId === 'profile' ? 'active' : '' %>"><i class="bi bi-person-circle"></i> Profile</a></li>
+            <li><a href="/settings" class="<%= activeId === 'settings' ? 'active' : '' %>"><i class="bi bi-gear"></i> Settings</a></li>
+        </ul>
+    </div>
+    <div class="bottom">
+        <a class="btn btn-primary create-thread-btn" href="/post/create">
+            <i class="bi bi-feather"></i> Create Thread
+        </a>
+    </div>
 </nav>
