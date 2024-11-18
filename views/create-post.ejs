@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <link rel="stylesheet" href="/css/postbox.css">
-<%- include('partials/head', {"title": "Create Post - Hubble"}) %>
+<%- include('partials/head', {"title": "Create Thread - Hubble"}) %>
 <body>
     <%- include('partials/navbar', { activeId: '' }) %>
     <main class="p-4">
-        <h1>Create Post</h1>
+        <h1>Create Thread</h1>
         <div class="post-box-container">
             <div class="post-box">
                 <div class="profile-section">
                     <img src="https://via.placeholder.com/50" alt="Avatar" class="avatar">
                     <span class="username">Username</span>
                 </div>
-                <textarea id="postContent" class="text-area" rows="4" placeholder="What's up?" maxlength="300"></textarea>
+                <textarea id="postContent" class="text-area" rows="4" placeholder="Start a chat..." maxlength="300"></textarea>
                 <div class="controls">
                     <div class="buttons">
-                        <button class="action-button">Image</button>
-                        <button class="action-button">Video</button>
-                        <button class="action-button">Emoji</button>
+                        <button class="action-button"><i class="bi bi-card-image"></i></button>
+                        <button class="action-button"><i class="bi bi-camera-video"></i></button>
+                        <button class="action-button"><i class="bi bi-emoji-smile"></i></button>
                     </div>
                     <div class="character-counter">
                         <span id="charCount">0</span>/300

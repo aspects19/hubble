@@ -8,10 +8,14 @@ nav.sidebar {
     justify-content: space-between; // Ensures top and bottom sections are spaced apart
     width: 25vw;
     height: 100vh;
+    overflow-y: auto; // Enables scrolling for overflow content
+    box-sizing: border-box; // Ensures padding is included in height calculation
 
     > .top {
         ul {
             list-style-type: none;
+            padding: 1em; // Adds some padding to the list
+            margin: 0; // Removes default margin
             > li {
                 font-size: 1.5em;
                 margin-top: 0.5em;
@@ -25,6 +29,7 @@ nav.sidebar {
     > .bottom {
         text-align: center;
         margin-bottom: 1em;
+        padding: 1em; // Ensures spacing at the bottom
 
         .create-thread-btn {
             background-color: #007bff; // Bootstrap primary color
@@ -53,6 +58,7 @@ nav.sidebar {
 main {
     width: 75vw;
     height: 100vh;
+    overflow: hidden; // Ensures no overflow within main content
 }
 
 .active {
