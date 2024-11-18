@@ -1,9 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-// Define the /api/data route
-router.get("/data", (req, res) => {
-  res.json({ success: true, data: "Here is your data" });
+router.post("/post", (req, res) => {
+  // For create threads
+});
+
+router.get("/recommend", (req, res) => {
+  // For thread recommendations personalised per user
 });
 
 module.exports = router;

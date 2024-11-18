@@ -9,6 +9,7 @@ const port = process.env.PORT || 3000;
 
 // Import routes
 const indexRoute = require("./routes/index");
+const accountRoute = require("./routes/account");
 const searchRoute = require("./routes/search");
 const notificationsRoute = require("./routes/notifications");
 const settingsRoute = require("./routes/settings");
@@ -29,6 +30,7 @@ app.set("view engine", "ejs");
 
 // Use routes
 app.use("/", indexRoute);
+app.use("/account", accountRoute);
 app.use("/post", postRoute);
 app.use("/search", searchRoute);
 app.use("/notifications", notificationsRoute);
