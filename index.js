@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const session = require("express-session");
+const bodyParser = require("body-parser");
 const app = express();
 
 require("dotenv").config();
@@ -21,12 +23,21 @@ const postRoute = require("./routes/post");
 app.use(cors());
 
 // Serve static files from the 'public' folder
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public")));
 app.use("/bootstrap", express.static(path.join(__dirname, "node_modules/bootstrap/dist")));
 app.use("/bootstrap-icons/font", express.static(path.join(__dirname, "node_modules/bootstrap-icons/font")));
 
 // Set EJS as view engine
 app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+
+// Middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}));
 
 // Use routes
 app.use("/", indexRoute);
@@ -47,7 +58,7 @@ app.use((req, res) => {
 });
 
 // Error-handling middleware
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   console.error(err.stack); // Log the error for debugging
   res.status(500).render("error", {
     errorCode: 500,
