@@ -19,35 +19,41 @@ const userRoute = require("./routes/user");
 const apiRoute = require("./routes/api");
 const postRoute = require("./routes/post");
 
-// Enable CORS
-app.use(cors());
+// Enable CORS with specific configuration
+app.use(cors({
+  origin: '*', // Allow all origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods
+  allowedHeaders: ['Content-Type', 'Authorization'] // Allow specific headers
+}));
+
+// Set view engine to EJS
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 // Serve static files from the 'public' folder
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/bootstrap", express.static(path.join(__dirname, "node_modules/bootstrap/dist")));
 app.use("/bootstrap-icons/font", express.static(path.join(__dirname, "node_modules/bootstrap-icons/font")));
 
-// Set EJS as view engine
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
-
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: { secure: false } // Set to true if using HTTPS
 }));
 
-// Use routes
+// Routes
 app.use("/", indexRoute);
 app.use("/account", accountRoute);
-app.use("/post", postRoute);
 app.use("/search", searchRoute);
 app.use("/notifications", notificationsRoute);
 app.use("/settings", settingsRoute);
 app.use("/user", userRoute);
 app.use("/api", apiRoute);
+app.use("/post", postRoute);
 
 // Handle 404 errors
 app.use((req, res) => {
@@ -66,7 +72,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start the server
 app.listen(port, () => {
-  console.log(`App running on http://localhost:${port}`);
+  console.log(`Server is running on port ${port}`);
 });

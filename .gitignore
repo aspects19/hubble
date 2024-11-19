@@ -133,3 +133,6 @@ public/css/*
 uploads/*
 
 package-lock.json
+
+database.db
+database.db-journal

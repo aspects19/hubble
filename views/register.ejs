@@ -1,17 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('partials/head', {"title": "Register - Hubble"}) %>
+<head>
+  <script>
+    async function register(event) {
+      event.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch('/account/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          window.location.href = '/account/login';
+        } else {
+          document.getElementById('error').innerText = result.message;
+        }
+      } catch (error) {
+        document.getElementById('error').innerText = 'Registration failed';
+      }
+    }
+  </script>
+</head>
 <body>
     <%- include('partials/navbar', { activeId: '' }) %>
     <main class="p-4">
         <h1>Register</h1>
-        <form action="/account/register" method="POST">
+        <form onsubmit="register(event)">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
             <button type="submit">Register</button>
           </form>
+          <p id="error" style="color: red;"></p>
     </main>
 </body>
 </html>
