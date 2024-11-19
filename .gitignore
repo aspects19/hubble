@@ -131,3 +131,5 @@ dist
 
 public/css/*
 uploads/*
+
+package-lock.json
