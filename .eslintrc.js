@@ -18,7 +18,9 @@ module.exports = {
       },
     },
     // Apply recommended rules from @eslint/js
-    ...pluginJs.configs.recommended.overrides,
+    {
+      ...pluginJs.configs.recommended,
+    },
     // Custom rules for stricter linting
     {
       rules: {
