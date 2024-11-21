@@ -6,21 +6,19 @@ module.exports = {
     // Apply to all JavaScript files
     {
       files: ["**/*.js"],
-      languageOptions: {
+      parserOptions: {
         sourceType: "commonjs", // Specify the module system
       },
     },
     // Configure global variables for browser and Node.js
     {
-      languageOptions: {
-        globals: {
-          ...globals.browser,
-          ...globals.node,
-        },
+      globals: {
+        ...globals.browser,
+        ...globals.node,
       },
     },
     // Apply recommended rules from @eslint/js
-    pluginJs.configs.recommended,
+    ...pluginJs.configs.recommended.overrides,
     // Custom rules for stricter linting
     {
       rules: {
