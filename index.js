@@ -3,6 +3,7 @@ const cors = require("cors");
 const path = require("path");
 const session = require("express-session");
 const bodyParser = require("body-parser");
+const csurf = require("csurf");
 const app = express();
 
 require("dotenv").config();
@@ -42,8 +43,11 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false } // Set to true if using HTTPS
+  cookie: { secure: process.env.NODE_ENV === 'production' } // Set to true if using HTTPS
 }));
+
+// CSRF protection middleware
+app.use(csurf());
 
 // Routes
 app.use("/", indexRoute);

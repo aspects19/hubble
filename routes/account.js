@@ -1,8 +1,19 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const Database = require('better-sqlite3');
+const rateLimit = require('express-rate-limit');
 const db = new Database('./database.db');
 const router = express.Router();
+
+// Rate limiter middleware
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.'
+});
+
+// Apply rate limiter to all requests
+router.use(limiter);
 
 // Render registration form
 router.get('/register', (req, res) => {
