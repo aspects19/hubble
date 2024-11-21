@@ -7,11 +7,12 @@ module.exports = {
     {
       files: ["**/*.js"],
       parserOptions: {
-        sourceType: "commonjs", // Specify the module system
+        sourceType: "commonjs",
       },
     },
     // Configure global variables for browser and Node.js
     {
+      files: ["**/*.js"],
       globals: {
         ...globals.browser,
         ...globals.node,
@@ -23,14 +24,14 @@ module.exports = {
     },
     // Custom rules for stricter linting
     {
+      files: ["**/*.js"],
       rules: {
-        // Report and fix common issues
-        "no-unused-vars": ["error", { vars: "all", args: "after-used", ignoreRestSiblings: true }], // Customize unused variable behavior
-        "no-console": "warn", // Warn about console usage in production code
-        "eqeqeq": ["error", "always"], // Require strict equality
-        "curly": ["error", "all"], // Require curly braces for all control statements
-        "semi": ["error", "always"], // Enforce semicolons
-        "quotes": ["error", "double", { avoidEscape: true }], // Use double quotes
+        "no-unused-vars": ["error", { vars: "all", args: "after-used", ignoreRestSiblings: true }],
+        "no-console": "warn",
+        "eqeqeq": ["error", "always"],
+        "curly": ["error", "all"],
+        "semi": ["error", "always"],
+        "quotes": ["error", "double", { avoidEscape: true }],
       },
     },
   ],
