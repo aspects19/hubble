@@ -76,7 +76,9 @@ router.post('/login', limiter, validateInput, async (req, res) => {
 
     req.session.userId = user.id;
     req.session.username = user.username;
-    res.status(200).json({ message: 'Login successful' });
+    req.session.save(() => {
+      res.status(200).json({ message: 'Login successful' });
+    });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Login failed' });

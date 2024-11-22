@@ -68,6 +68,15 @@ app.use(session({
     maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
   }
 }));
+
+// After session middleware
+app.use((req, res, next) => {
+  // Make auth status available to all views
+  res.locals.userId = req.session?.userId;
+  res.locals.isAuthenticated = !!req.session?.userId;
+  next();
+});
+
 app.use(csurf());
 app.use((req, res, next) => {
   res.locals.csrfToken = req.csrfToken();

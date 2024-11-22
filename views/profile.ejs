@@ -4,72 +4,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= username %>'s Profile</title>
-    <%- include('partials/head', { title: profile ? `${profile.username} - Profile` : 'Profile - Hubble' }) %>
+    <%- include('partials/head', { title: profile ? `${profile.username}'s Profile` : 'Profile - Hubble' }) %>
   </head>
   <body>
     <%- include('partials/navbar', { activeId: 'profile' }) %>
-    <main class="p-4">
-      <h1><%= displayName %></h1>
-      <h6><strong>@<%= username %></strong></h6>
-    </main>
-
-    <div class="container mt-4">
-      <% if (profile) { %>
+    <main>
+      <div class="container-fluid">
         <div class="row">
-          <div class="col-md-4">
-            <div class="card">
-              <div class="card-body">
-                <h1 class="mb-3">@<%= profile.username %></h1>
-                
-                <% if (profile.bio) { %>
-                  <p class="text-muted"><%= profile.bio %></p>
-                <% } %>
-                
-                <% if (profile.location) { %>
-                  <p><i class="bi bi-geo-alt"></i> <%= profile.location %></p>
-                <% } %>
-                
-                <% if (profile.website) { %>
-                  <p>
-                    <i class="bi bi-link"></i> 
-                    <a href="<%= profile.website %>" target="_blank">
-                      <%= profile.website %>
-                    </a>
-                  </p>
-                <% } %>
-      
-                <% if (isOwner) { %>
-                  <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                    Edit Profile
-                  </button>
-                <% } %>
-              </div>
-            </div>
-          </div>
-      
-          <div class="col-md-8">
-            <h3>Posts</h3>
-            <% if (posts?.length > 0) { %>
-              <% posts.forEach(post => { %>
-                <div class="card mb-3">
-                  <div class="card-body">
-                    <p><%= post.content %></p>
-                    <small class="text-muted">
-                      <%= new Date(post.created_at).toLocaleString() %>
-                      · <%= post.likeCount || 0 %> likes
-                    </small>
+          <div class="main-content">
+            <div class="container mt-4">
+              <% if (profile) { %>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="card">
+                      <div class="card-body">
+                        <h4 class="mb-2">@<%= profile.username %></h4>
+                        
+                        <% if (profile.bio) { %>
+                          <p class="text-muted"><%= profile.bio %></p>
+                        <% } %>
+                        
+                        <% if (profile.location) { %>
+                          <p><i class="bi bi-geo-alt"></i> <%= profile.location %></p>
+                        <% } %>
+                        
+                        <% if (profile.website) { %>
+                          <p>
+                            <i class="bi bi-link"></i> 
+                            <a href="<%= profile.website %>" target="_blank">
+                              <%= profile.website %>
+                            </a>
+                          </p>
+                        <% } %>
+              
+                        <% if (isOwner) { %>
+                          <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                            Edit Profile
+                          </button>
+                        <% } %>
+                      </div>
+                    </div>
+                  </div>
+              
+                  <div class="col-md-8">
+                    <h5 class="mb-3">Posts</h5>
+                    <% if (posts && posts.length > 0) { %>
+                      <% posts.forEach(post => { %>
+                        <%- include('partials/post-card', { post, fullView: false }) %>
+                      <% }) %>
+                    <% } else { %>
+                      <p class="text-muted">No posts yet</p>
+                    <% } %>
                   </div>
                 </div>
-              <% }) %>
-            <% } else { %>
-              <p class="text-muted">No posts yet</p>
-            <% } %>
+              <% } else { %>
+                <div class="alert alert-warning">Profile not found</div>
+              <% } %>
+            </div>
           </div>
         </div>
-      <% } else { %>
-        <div class="alert alert-warning">Profile not found</div>
-      <% } %>
-    </div>
+      </div>
+    </main>
     
     <% if (isOwner && profile) { %>
       <%- include('partials/edit-profile-modal', { profile }) %>

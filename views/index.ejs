@@ -6,17 +6,6 @@
     <main class="p-4">
         <h1>Welcome to Hubble!</h1>
         <div class="container mt-4">
-          <% if (user) { %>
-            <button 
-              class="btn btn-primary mb-4" 
-              data-bs-toggle="modal" 
-              data-bs-target="#createPostModal"
-            >
-              Create Post
-            </button>
-            <%- include('partials/create-post-modal') %>
-          <% } %>
-
           <div class="posts">
             <% posts.forEach(post => { %>
               <%- include('partials/post-card', { post, fullView: false }) %>

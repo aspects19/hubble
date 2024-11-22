@@ -11,8 +11,17 @@
         </ul>
     </div>
     <div class="bottom">
-        <a class="btn btn-primary create-thread-btn" href="/post/create">
-            <i class="bi bi-feather"></i> Create Thread
-        </a>
+        <% if (isAuthenticated) { %>
+            <a class="btn btn-primary create-thread-btn" href="/post/create">
+                <i class="bi bi-feather"></i> Create Thread
+            </a>
+        <% } else { %>
+            <a class="btn btn-outline-primary login-btn" href="/account/login">
+                <i class="bi bi-box-arrow-in-right"></i> Login
+            </a>
+            <a class="btn btn-primary signup-btn" href="/account/register">
+                <i class="bi bi-person-plus"></i> Sign Up
+            </a>
+        <% } %>
     </div>
 </nav>
