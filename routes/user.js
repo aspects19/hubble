@@ -2,6 +2,28 @@ const express = require('express');
 const router = express.Router();
 const { isAuthenticated } = require('../middleware/auth');
 const db = require('../models/Post');
+const rateLimit = require('express-rate-limit');
+
+// Rate limiters
+const profileLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP/user to 100 requests per window
+  message: 'Too many profile requests',
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.session?.userId || req.ip
+});
+
+const editLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 30, // 30 profile edits per hour
+  message: 'Too many profile updates',
+  standardHeaders: true,
+  keyGenerator: (req) => req.session.userId
+});
+
+// Apply rate limiting to all routes
+router.use(profileLimiter);
 
 // View own profile
 router.get('/me', isAuthenticated, (req, res) => {
@@ -38,7 +60,7 @@ router.get('/me', isAuthenticated, (req, res) => {
   }
 });
 
-// Handle both /user/@username and /user/username patterns
+// View user profile
 router.get(['/@:username'], async (req, res) => {
   try {
     const username = req.params.username.replace('@', ''); // Remove @ if present
@@ -82,22 +104,16 @@ router.get(['/@:username'], async (req, res) => {
   }
 });
 
-// Edit profile
-router.post('/me', isAuthenticated, async (req, res) => {
+// Update profile
+router.post('/me', [isAuthenticated, editLimiter], async (req, res) => {
   const { bio, location, website } = req.body;
-  
   try {
-    const stmt = db.prepare(`
-      INSERT INTO profiles (userId, bio, location, website) 
-      VALUES (?, ?, ?, ?)
-      ON CONFLICT(userId) DO UPDATE SET 
-        bio = excluded.bio,
-        location = excluded.location, 
-        website = excluded.website,
-        updated_at = CURRENT_TIMESTAMP
-    `);
+    db.prepare(`
+      UPDATE profiles 
+      SET bio = ?, location = ?, website = ? 
+      WHERE userId = ?
+    `).run(bio, location, website, req.session.userId);
     
-    stmt.run(req.session.userId, bio, location, website);
     res.redirect('/user/me');
   } catch (error) {
     console.error(error);

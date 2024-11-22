@@ -1,6 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models/Post');
+const rateLimit = require('express-rate-limit');
+
+const indexLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  message: 'Too many requests',
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.session?.userId || req.ip
+});
+
+router.use(indexLimiter);
 
 router.get('/', (req, res) => {
   try {
