@@ -1,46 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('partials/head', {"title": "Login - Hubble"}) %>
-<head>
+<body>
+  <%- include('partials/navbar', { activeId: '' }) %>
+  <main class="container mt-5">
+    <h1>Login</h1>
+    <div id="error" class="alert alert-danger" style="display: none;"></div>
+    <form id="loginForm">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" id="username" name="username" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" name="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+  </main>
+
   <script>
-    async function login(event) {
+    document.getElementById('loginForm').addEventListener('submit', async (event) => {
       event.preventDefault();
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
+      const errorDiv = document.getElementById('error');
+      errorDiv.style.display = 'none';
 
       try {
         const response = await fetch('/account/login', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'CSRF-Token': document.querySelector('[name="_csrf"]').value
           },
-          body: JSON.stringify({ username, password })
+          body: JSON.stringify({
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value
+          })
         });
 
-        const result = await response.json();
+        const data = await response.json();
         if (response.ok) {
           window.location.href = '/';
         } else {
-          document.getElementById('error').innerText = result.message;
+          errorDiv.textContent = data.message;
+          errorDiv.style.display = 'block';
         }
       } catch (error) {
-        document.getElementById('error').innerText = 'Login failed';
+        errorDiv.textContent = 'An error occurred. Please try again.';
+        errorDiv.style.display = 'block';
       }
-    }
+    });
   </script>
-</head>
-<body>
-    <%- include('partials/navbar', { activeId: '' }) %>
-    <main class="p-4">
-        <h1>Login</h1>
-        <form onsubmit="login(event)">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            <button type="submit">Login</button>
-          </form>
-        <p id="error" style="color: red;"></p>
-    </main>
 </body>
 </html>

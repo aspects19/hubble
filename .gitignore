@@ -134,5 +134,4 @@ uploads/*
 
 package-lock.json
 
-database/database.db
-database/database.db-journal
+database/*

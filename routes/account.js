@@ -5,94 +5,102 @@ const path = require('path');
 const rateLimit = require('express-rate-limit');
 const router = express.Router();
 
-// Construct the database path using process.env.ROOT
-const dbPath = path.join(process.env.ROOT, 'database/database.db');
-const db = new Database(dbPath);
-
 // Rate limiter middleware
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: { message: 'Too many requests, please try again later.' }
 });
 
-// Apply rate limiter to all requests
-router.use(limiter);
-
-// Render registration form
-router.get('/register', (req, res) => {
-  res.render('register');
-});
-
-// Render login form
-router.get('/login', (req, res) => {
-  res.render('login');
-});
-
-// Register route
-router.post('/register', async (req, res) => {
+// Input validation middleware
+const validateInput = (req, res, next) => {
   const { username, password } = req.body;
+  
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Username and password are required' });
+  }
+  
+  if (username.length < 3 || username.length > 20) {
+    return res.status(400).json({ message: 'Username must be between 3 and 20 characters' });
+  }
+  
+  if (password.length < 6) {
+    return res.status(400).json({ message: 'Password must be at least 6 characters' });
+  }
+  
+  next();
+};
+
+// Database connection
+const dbPath = path.join(process.env.ROOT, 'database/database.db');
+const db = new Database(dbPath);
+
+// Routes
+router.get('/register', (req, res) => {
+  res.render('register', { csrfToken: req.csrfToken() });
+});
+
+router.get('/login', (req, res) => {
+  res.render('login', { csrfToken: req.csrfToken() });
+});
+
+router.post('/register', limiter, validateInput, async (req, res) => {
+  const { username, password } = req.body;
+  
   try {
+    // Check if username already exists
+    const existingUser = db.prepare('SELECT username FROM users WHERE username = ?').get(username);
+    if (existingUser) {
+      return res.status(400).json({ message: 'Username already exists' });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const stmt = db.prepare('INSERT INTO users (username, password) VALUES (?, ?)');
     stmt.run(username, hashedPassword);
+    
     console.log('User registered:', username);
-    res.status(201).json({ message: 'User registered' });
+    res.status(201).json({ message: 'Registration successful' });
   } catch (error) {
-    console.error('Error during registration:', error);
-    if (error.code === 'SQLITE_CONSTRAINT') {
-      res.status(400).json({ message: 'Username already exists' });
-    } else {
-      res.status(500).json({ message: 'Internal Server Error' });
-    }
+    console.error('Registration error:', error);
+    res.status(500).json({ message: 'An error occurred during registration' });
   }
 });
 
-// Login route
-router.post('/login', async (req, res) => {
+router.post('/login', limiter, validateInput, async (req, res) => {
   const { username, password } = req.body;
+  
   try {
-    const stmt = db.prepare('SELECT * FROM users WHERE username = ?');
-    const user = stmt.get(username);
-    if (user) {
-      const match = await bcrypt.compare(password, user.password);
-      if (match) {
-        req.session.userId = user.id;
-        console.log('Login successful:', username);
-        res.status(200).json({ message: 'Login successful' });
-      } else {
-        console.log('Password does not match for user:', username);
-        res.status(401).json({ message: 'Invalid credentials' });
-      }
-    } else {
-      console.log('User not found:', username);
-      res.status(401).json({ message: 'Invalid credentials' });
+    const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
+    
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    // Set session data
+    req.session.userId = user.id;
+    req.session.username = user.username;
+    
+    console.log('Login successful:', username);
+    res.status(200).json({ message: 'Login successful' });
   } catch (error) {
-    console.error('Error during login:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'An error occurred during login' });
   }
 });
 
-// Logout route
 router.post('/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) {
-      console.error('Error during logout:', err);
-      return res.status(500).json({ message: 'Internal Server Error' });
+      console.error('Logout error:', err);
+      return res.status(500).json({ message: 'An error occurred during logout' });
     }
     res.status(200).json({ message: 'Logout successful' });
   });
-});
-
-// Render registration form
-router.get('/register', (req, res) => {
-  res.render('register');
-});
-
-// Render login form
-router.get('/login', (req, res) => {
-  res.render('login');
 });
 
 module.exports = router;
