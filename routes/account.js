@@ -1,9 +1,13 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const Database = require('better-sqlite3');
+const path = require('path');
 const rateLimit = require('express-rate-limit');
-const db = new Database('./database.db');
 const router = express.Router();
+
+// Construct the database path using process.env.ROOT
+const dbPath = path.join(process.env.ROOT, 'database/database.db');
+const db = new Database(dbPath);
 
 // Rate limiter middleware
 const limiter = rateLimit({

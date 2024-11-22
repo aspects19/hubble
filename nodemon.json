@@ -1,3 +1,6 @@
 {
-    "ext": "*.*"
+  "watch": ["src", "routes", "views"],
+  "ignore": ["database"],
+  "ext": "js,json,ejs",
+  "exec": "node index.js"
 }

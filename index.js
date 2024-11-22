@@ -1,3 +1,6 @@
+// Run setup.js to set the ROOT environment variable and set up the database
+require('./setup');
+
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
