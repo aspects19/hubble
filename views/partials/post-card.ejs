@@ -1,5 +1,4 @@
-<div class="card mb-3 post-card <%= typeof fullView === 'undefined' || !fullView ? 'clickable' : '' %>" 
-     <%= typeof fullView === 'undefined' || !fullView ? `onclick="window.location.href='/post/${post.id}'"` : '' %>>
+<div class="card mb-3 post-card" onclick="location.href='/post/<%= post.id %>'" style="cursor: pointer;">
   <div class="card-body">
     <div class="d-flex justify-content-between align-items-center mb-3" onclick="event.stopPropagation()">
       <div class="d-flex align-items-center">
@@ -12,7 +11,7 @@
       </div>
     </div>
 
-    <div class="markdown-content" onclick="event.stopPropagation()">
+    <div class="markdown-content">
       <%- post.htmlContent || post.content %>
     </div>
 
@@ -23,6 +22,22 @@
     </div>
   </div>
 </div>
+
+<style>
+.post-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.post-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.post-card a {
+  z-index: 2;
+  position: relative;
+}
+</style>
 
 <% if (!locals.hideScripts) { %>
 <script>
