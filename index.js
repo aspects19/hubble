@@ -7,6 +7,7 @@ const path = require("path");
 const session = require("express-session");
 const bodyParser = require("body-parser");
 const csurf = require("csurf");
+const rateLimit = require('express-rate-limit');
 const app = express();
 
 require("dotenv").config();
@@ -99,6 +100,42 @@ app.use((req, res, next) => {
   res.locals.csrfToken = req.csrfToken();
   next();
 });
+
+// Rate limiter configurations
+const publicLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again after 15 minutes',
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+const authLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 1000, // 1000 requests per windowMs
+  message: 'Too many requests from this account, please try again after an hour',
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.session.userId || req.ip // Use user ID if authenticated, fallback to IP
+});
+
+// Apply rate limiting to all routes
+app.use(publicLimiter);
+
+// Apply stricter limits to authentication routes
+app.use('/account', authLimiter);
+app.use('/api', authLimiter);
+
+// Apply different limits to specific routes that need it
+app.use('/search', rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 50 // 50 requests per 5 minutes
+}));
+
+app.use('/post', rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 30 // 30 posts per 10 minutes
+}));
 
 // Routes
 app.use("/", indexRoute);
