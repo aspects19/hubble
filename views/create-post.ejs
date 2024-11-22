@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <link rel="stylesheet" href="/css/postbox.css">
-<%- include('partials/head', {"title": "Create Thread - Hubble"}) %>
+<%- include('partials/head', {title: 'Create Thread'}) %>
 <body>
     <%- include('partials/navbar', { activeId: '' }) %>
     <main class="p-4">
@@ -26,6 +26,22 @@
                 </div>
                 <button id="postButton" class="submit-button" disabled>Post</button>
             </div>
+        </div>
+        <div class="container mt-4">
+            <h1>Create Post</h1>
+            <form action="/post/create" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <div class="mb-3">
+                    <textarea 
+                        class="form-control" 
+                        name="content" 
+                        rows="4" 
+                        maxlength="1000" 
+                        required
+                    ></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Post</button>
+            </form>
         </div>
     </main>
     <script>

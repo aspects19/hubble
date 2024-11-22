@@ -1,10 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head', {"title": "Home - Hubble"}) %>
+<%- include('partials/head', {title: 'Home'}) %>
 <body>
     <%- include('partials/navbar', { activeId: 'home' }) %>
     <main class="p-4">
         <h1>Welcome to Hubble!</h1>
+        <div class="container mt-4">
+          <% if (user) { %>
+            <a href="/post/create" class="btn btn-primary mb-4">Create Post</a>
+          <% } %>
+          
+          <div class="posts">
+            <% posts.forEach(post => { %>
+              <div class="card mb-3">
+                <div class="card-body">
+                  <h6 class="card-subtitle mb-2 text-muted">@<%= post.username %></h6>
+                  <p class="card-text"><%= post.content %></p>
+                  <small class="text-muted">
+                    <%= new Date(post.created_at).toLocaleString() %>
+                    · <%= post.likes %> likes
+                  </small>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </div>
     </main>
 </body>
 </html>
