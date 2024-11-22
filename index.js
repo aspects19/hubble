@@ -47,14 +47,37 @@ app.use((req, res, next) => {
   next();
 });
 
+// Static files rate limiter
+const staticFilesLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 500, // 500 requests per windowMs
+  message: 'Too many requests for static files',
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+// Service worker specific limiter
+const swLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // 100 requests per windowMs
+  message: 'Too many service worker requests'
+});
+
+// Manifest file limiter
+const manifestLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // 100 requests per windowMs
+  message: 'Too many manifest requests'
+});
+
 // Add content-type headers for service worker
-app.get('/service-worker.js', (req, res) => {
+app.get('/service-worker.js', swLimiter, (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.sendFile(path.join(__dirname, 'public/service-worker.js'));
 });
 
 // Add headers for manifest
-app.get('/manifest.json', (req, res) => {
+app.get('/manifest.json', manifestLimiter, (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.sendFile(path.join(__dirname, 'public/manifest.json'));
@@ -65,6 +88,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // Serve static files from the 'public' folder
+app.use('/public', staticFilesLimiter);
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/bootstrap", express.static(path.join(__dirname, "node_modules/bootstrap/dist")));
 app.use("/bootstrap-icons/font", express.static(path.join(__dirname, "node_modules/bootstrap-icons/font")));
