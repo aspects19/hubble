@@ -7,25 +7,44 @@ const session = require('express-session');
 const csurf = require('csurf');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
+const SQLiteStore = require('connect-sqlite3')(session);
 const app = express();
 
 const port = process.env.PORT || 3000;
 
-// Rate limiting configuration
+// Rate limiting configuration for normal users
 const createRateLimiter = (windowMs, max, message) => rateLimit({
   windowMs,
   max,
   message,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: req => req.session?.userId || req.ip
+  // Use userId if logged in, otherwise IP
+  keyGenerator: req => req.session?.userId || req.ip,
+  // Skip rate limiting for authenticated users on most routes
+  skip: (req) => {
+    const isAuthenticatedUser = !!req.session?.userId;
+    const isAuthRoute = req.path.startsWith('/account');
+    // Still apply limits on auth routes even for logged in users
+    return isAuthenticatedUser && !isAuthRoute;
+  }
 });
 
-const limiter = createRateLimiter(15 * 60 * 1000, 100, 'Too many requests');
-const authLimiter = createRateLimiter(60 * 60 * 1000, 1000, 'Too many auth requests');
+// More generous limits
+const limiter = createRateLimiter(
+  15 * 60 * 1000, // 15 minutes
+  300,            // 300 requests per window
+  'Too many requests, please try again later'
+);
+
+const authLimiter = createRateLimiter(
+  60 * 60 * 1000, // 1 hour
+  1000,           // 1000 requests per window for auth routes
+  'Too many authentication attempts'
+);
 
 // Core middleware
-app.use(limiter);
+app.use(limiter); // Global limit
 app.use(cors({
   origin: true,
   credentials: true,
@@ -35,13 +54,18 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(session({
+  store: new SQLiteStore({
+    dir: path.join(process.env.ROOT, 'database'),
+    db: 'database.db',
+    table: 'sessions'
+  }),
   secret: process.env.SESSION_SECRET || 'your-secret-key',
   resave: false,
   saveUninitialized: false,
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000
+    maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
   }
 }));
 app.use(csurf());

@@ -1,11 +1,10 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const Database = require('better-sqlite3');
-const path = require('path');
-const rateLimit = require('express-rate-limit');
 const router = express.Router();
+const db = require('../models/Post');
 
 // Rate limiter middleware
+const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs
@@ -31,38 +30,37 @@ const validateInput = (req, res, next) => {
   next();
 };
 
-// Database connection
-const dbPath = path.join(process.env.ROOT, 'database/database.db');
-const db = new Database(dbPath);
-
 // Routes
 router.get('/register', (req, res) => {
-  res.render('register', { csrfToken: req.csrfToken() });
+  if (req.session.userId) {
+    return res.redirect('/user/me');
+  }
+  res.render('register', { error: null });
 });
 
 router.get('/login', (req, res) => {
-  res.render('login', { csrfToken: req.csrfToken() });
+  if (req.session.userId) {
+    return res.redirect('/user/me');
+  }
+  res.render('login', { error: null });
 });
 
 router.post('/register', limiter, validateInput, async (req, res) => {
   const { username, password } = req.body;
   
   try {
-    // Check if username already exists
-    const existingUser = db.prepare('SELECT username FROM users WHERE username = ?').get(username);
-    if (existingUser) {
-      return res.status(400).json({ message: 'Username already exists' });
-    }
-
     const hashedPassword = await bcrypt.hash(password, 10);
-    const stmt = db.prepare('INSERT INTO users (username, password) VALUES (?, ?)');
-    stmt.run(username, hashedPassword);
     
-    console.log('User registered:', username);
+    // Use transaction to create user and profile
+    db.transaction(() => {
+      const user = db.prepare('INSERT INTO users (username, password) VALUES (?, ?)').run(username, hashedPassword);
+      db.prepare('INSERT INTO profiles (userId) VALUES (?)').run(user.lastInsertRowid);
+    })();
+    
     res.status(201).json({ message: 'Registration successful' });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ message: 'An error occurred during registration' });
+    res.status(500).json({ message: 'Registration failed' });
   }
 });
 
@@ -72,24 +70,16 @@ router.post('/login', limiter, validateInput, async (req, res) => {
   try {
     const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
     
-    if (!user) {
+    if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
-    // Set session data
     req.session.userId = user.id;
     req.session.username = user.username;
-    
-    console.log('Login successful:', username);
     res.status(200).json({ message: 'Login successful' });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ message: 'An error occurred during login' });
+    res.status(500).json({ message: 'Login failed' });
   }
 });
 
@@ -97,9 +87,9 @@ router.post('/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       console.error('Logout error:', err);
-      return res.status(500).json({ message: 'An error occurred during logout' });
+      return res.status(500).json({ message: 'Logout failed' });
     }
-    res.status(200).json({ message: 'Logout successful' });
+    res.redirect('/account/login');
   });
 });
 

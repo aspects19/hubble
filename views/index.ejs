@@ -6,10 +6,6 @@
     <main class="p-4">
         <h1>Welcome to Hubble!</h1>
         <div class="container mt-4">
-          <% if (user) { %>
-            <a href="/post/create" class="btn btn-primary mb-4">Create Post</a>
-          <% } %>
-          
           <div class="posts">
             <% posts.forEach(post => { %>
               <div class="card mb-3">
