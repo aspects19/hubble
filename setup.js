@@ -78,4 +78,18 @@ if (tablesExist.length < 5) {
   console.log("✅ Database schema already exists");
 }
 
+// Before creating tables, check for htmlContent column
+const hasHtmlColumn = db.prepare(`
+  SELECT COUNT(*) as count 
+  FROM pragma_table_info('posts') 
+  WHERE name='htmlContent'
+`).get();
+
+if (!hasHtmlColumn.count) {
+  db.exec(`
+    ALTER TABLE posts ADD COLUMN htmlContent TEXT;
+  `);
+  console.log("✅ Added htmlContent column to posts table");
+}
+
 db.close();

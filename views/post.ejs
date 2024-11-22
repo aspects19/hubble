@@ -2,37 +2,19 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="/css/post.css">
-    <%- include('partials/head', { "title": "Post - Hubble" }) %>
+    <%- include('partials/head', {title: 'Post - Hubble'}) %>
 </head>
 <body>
-    <%- include('partials/navbar', { activeId: '' }) %>
-    <main class="post-container">
-        <div class="post-card">
-            <div class="post-header">
-                <img src="https://via.placeholder.com/50" alt="User Avatar" class="avatar">
-                <div class="post-user-info">
-                    <h2 class="username">John Doe</h2>
-                    <span class="timestamp">Posted on November 18, 2024</span>
-                </div>
-            </div>
-            <div class="post-content">
-                <p>
-                    This is the post content. It can be as long or as short as you'd like. It includes text, links, or even emojis! 🎉
-                </p>
-                <img src="https://via.placeholder.com/600x300" alt="Post Image" class="post-image">
-            </div>
-            <div class="post-footer">
-                <a class="like-btn" href="#">
-                    <i class="bi bi-heart"></i>
-                </a>
-                <a class="comment-btn" href="#">
-                    <i class="bi bi-chat-dots"></i>
-                </a>
-                <a class="share-btn" href="#">
-                    <i class="bi bi-share"></i>
-                </a>
+    <%- include('partials/navbar') %>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <%- include('partials/post-card', { post, fullView: true }) %>
             </div>
         </div>
-    </main>
+    </div>
+
+    <%- include('partials/footer') %>
 </body>
 </html>

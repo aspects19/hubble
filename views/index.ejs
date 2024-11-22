@@ -1,26 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head', {title: 'Home'}) %>
+<%- include('partials/head', {title: 'Home - Hubble'}) %>
 <body>
     <%- include('partials/navbar', { activeId: 'home' }) %>
     <main class="p-4">
         <h1>Welcome to Hubble!</h1>
         <div class="container mt-4">
+          <% if (user) { %>
+            <button 
+              class="btn btn-primary mb-4" 
+              data-bs-toggle="modal" 
+              data-bs-target="#createPostModal"
+            >
+              Create Post
+            </button>
+            <%- include('partials/create-post-modal') %>
+          <% } %>
+
           <div class="posts">
             <% posts.forEach(post => { %>
-              <div class="card mb-3">
-                <div class="card-body">
-                  <h6 class="card-subtitle mb-2 text-muted">@<%= post.username %></h6>
-                  <p class="card-text"><%= post.content %></p>
-                  <small class="text-muted">
-                    <%= new Date(post.created_at).toLocaleString() %>
-                    · <%= post.likes %> likes
-                  </small>
-                </div>
-              </div>
+              <%- include('partials/post-card', { post, fullView: false }) %>
             <% }) %>
           </div>
         </div>
     </main>
+    <%- include('partials/footer') %>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+      // Initialize marked
+      marked.use({
+        breaks: true,
+        gfm: true
+      });
+
+      // Add click handler to prevent post card click when clicking links
+      document.querySelectorAll('.markdown-content a').forEach(link => {
+        link.addEventListener('click', e => {
+          e.stopPropagation();
+        });
+      });
+    </script>
 </body>
 </html>

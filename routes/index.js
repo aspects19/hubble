@@ -2,6 +2,17 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models/Post');
 const rateLimit = require('express-rate-limit');
+const marked = require('marked');
+const createDOMPurifier = require('dompurify');
+const { JSDOM } = require('jsdom');
+
+const window = new JSDOM('').window;
+const DOMPurifier = createDOMPurifier(window);
+
+marked.setOptions({
+  breaks: true,
+  gfm: true
+});
 
 const indexLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -14,35 +25,27 @@ const indexLimiter = rateLimit({
 
 router.use(indexLimiter);
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    let posts;
-    if (req.session?.userId) {
-      // Get personalized recommendations
-      posts = db.prepare(`
-        SELECT posts.*, users.username 
-        FROM posts 
-        JOIN users ON posts.userId = users.id 
-        WHERE posts.userId IN (
-          SELECT DISTINCT userId 
-          FROM posts 
-          GROUP BY userId 
-          ORDER BY COUNT(*) DESC
-        ) 
-        ORDER BY posts.created_at DESC 
-        LIMIT 20
-      `).all();
-    } else {
-      // Get trending posts
-      posts = db.prepare(`
-        SELECT posts.*, users.username 
-        FROM posts 
-        JOIN users ON posts.userId = users.id 
-        ORDER BY posts.likes DESC, posts.created_at DESC 
-        LIMIT 20
-      `).all();
-    }
-    res.render('index', { posts, user: req.session?.userId });
+    let posts = db.prepare(`
+      SELECT posts.*, users.username, COUNT(likes.postId) as likeCount 
+      FROM posts 
+      JOIN users ON posts.userId = users.id 
+      LEFT JOIN likes ON posts.id = likes.postId 
+      GROUP BY posts.id 
+      ORDER BY posts.created_at DESC
+    `).all();
+
+    // Process markdown for posts without htmlContent
+    posts = posts.map(post => ({
+      ...post,
+      htmlContent: post.htmlContent || DOMPurifier.sanitize(marked.parse(post.content))
+    }));
+
+    res.render('index', { 
+      posts,
+      user: req.session?.userId 
+    });
   } catch (error) {
     console.error(error);
     res.status(500).render('error', { 
