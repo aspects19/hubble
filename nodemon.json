@@ -2,5 +2,5 @@
   "watch": ["src", "routes", "views"],
   "ignore": ["database"],
   "ext": "js,json,ejs",
-  "exec": "node index.js"
+  "exec": "npx gulp && node index.js"
 }

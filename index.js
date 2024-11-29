@@ -1,4 +1,3 @@
-require('./setup');
 require('dotenv').config();
 
 const express = require('express');
@@ -8,6 +7,7 @@ const csurf = require('csurf');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const SQLiteStore = require('connect-sqlite3')(session);
+const db = require('./setup');
 const app = express();
 
 const port = process.env.PORT || 3000;
@@ -69,6 +69,20 @@ app.use(session({
   }
 }));
 
+app.use(csurf());
+
+// Middleware to load user settings
+app.use((req, res, next) => {
+  if (req.session?.userId) {
+    const settings = db.prepare('SELECT theme FROM user_settings WHERE userId = ?')
+      .get(req.session.userId);
+    res.locals.theme = settings?.theme || 'light';
+  } else {
+    res.locals.theme = 'light';
+  }
+  next();
+});
+
 // After session middleware
 app.use((req, res, next) => {
   // Make auth status available to all views
@@ -77,7 +91,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(csurf());
 app.use((req, res, next) => {
   res.locals.csrfToken = req.csrfToken();
   res.header('Service-Worker-Allowed', '/');
@@ -104,6 +117,7 @@ app.get('/manifest.json', (req, res) => {
 
 // Routes with rate limiting
 app.use('/account', authLimiter, require('./routes/account'));
+app.use('/settings', authLimiter, require('./routes/settings'));
 app.use('/api', authLimiter, require('./routes/api'));
 app.use('/search', createRateLimiter(5 * 60 * 1000, 50), require('./routes/search'));
 app.use('/post', createRateLimiter(10 * 60 * 1000, 30), require('./routes/post'));

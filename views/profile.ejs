@@ -18,7 +18,12 @@
                   <div class="col-md-4">
                     <div class="card">
                       <div class="card-body">
-                        <h4 class="mb-2">@<%= profile.username %></h4>
+                        <div class="profile-header">
+                          <h1><%= profile.display_name || profile.username %></h1>
+                          <% if (profile.bio) { %>
+                            <p class="bio"><%= profile.bio %></p>
+                          <% } %>
+                        </div>
                         
                         <% if (profile.bio) { %>
                           <p class="text-muted"><%= profile.bio %></p>
